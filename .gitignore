@@ -102,4 +102,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# environment vars
+.env
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,go

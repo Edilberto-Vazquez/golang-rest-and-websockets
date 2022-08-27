@@ -2,14 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/models"
 	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/repository"
 	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/server"
+	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/segmentio/ksuid"
 	"golang.org/x/crypto/bcrypt"
@@ -87,7 +86,6 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 			return
 		}
 		if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
-			log.Println(err)
 			http.Error(w, "invalid credentials", http.StatusUnauthorized)
 			return
 		}
@@ -112,10 +110,7 @@ func LoginHandler(s server.Server) http.HandlerFunc {
 
 func MeHandler(s server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tokenString := strings.TrimSpace(r.Header.Get("Authorization"))
-		token, err := jwt.ParseWithClaims(tokenString, &models.AppClaims{}, func(t *jwt.Token) (interface{}, error) {
-			return []byte(s.Config().JWTSecret), nil
-		})
+		token, err := utils.ProcessToken(r.Header.Get("Authorization"), s)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

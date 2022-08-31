@@ -8,6 +8,7 @@ import (
 
 	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/database"
 	"github.com/Edilberto-Vazquez/golang-rest-and-websockets/repository"
+	"github.com/rs/cors"
 
 	websocket "github.com/Edilberto-Vazquez/golang-rest-and-websockets/websocket"
 	"github.com/gorilla/mux"
@@ -59,7 +60,7 @@ func NewServer(ctx context.Context, config *Config) (*Broker, error) {
 func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 	b.router = mux.NewRouter()
 	binder(b, b.router)
-	// Connecting to Database
+	handler := cors.AllowAll().Handler(b.router)
 	repo, err := database.NewPostgresRepository(b.config.DataBaseUrl)
 	if err != nil {
 		log.Fatal(err)
@@ -67,7 +68,7 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 	go b.hub.Run()
 	repository.SetRepository(repo)
 	log.Println("starting server on port", b.config.Port)
-	if err := http.ListenAndServe(b.config.Port, b.router); err != nil {
+	if err := http.ListenAndServe(b.config.Port, handler); err != nil {
 		log.Println("error starting server:", err)
 	} else {
 		log.Fatalf("server stopped")

@@ -15,7 +15,9 @@ import (
 
 func BindRoutes(s server.Server, r *mux.Router) {
 
-	r.Use(middleware.CheckAuthMiddleware(s))
+	api := r.PathPrefix("/api/v1").Subrouter()
+
+	api.Use(middleware.CheckAuthMiddleware(s))
 
 	r.HandleFunc("/", handlers.HomeHandler(s)).Methods(http.MethodGet)
 	r.HandleFunc("/signup", handlers.SignUpHandler(s)).Methods(http.MethodPost)

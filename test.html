@@ -1,0 +1,21 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    Post application
+  </body>
+  <script>
+    // fetch("http://localhost:5050/posts", { method: "GET" })
+    //   .then((response) => response.json())
+    //   .then((json) => console.log(json));
+
+    const ws = new WebSocket("ws://localhost:5050/ws");
+    ws.onopen = () => console.log("Connected to websocket");
+    ws.onmessage = (event) => console.log(event.data);
+    ws.onerror = (event) => console.log("Error: " + event.data);
+  </script>
+</html>
